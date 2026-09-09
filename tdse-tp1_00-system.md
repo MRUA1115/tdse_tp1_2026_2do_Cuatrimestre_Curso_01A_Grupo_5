@@ -20,4 +20,13 @@ Variables de control de tiempo (Convención DEL_SYS_NAME):
 2. DEL_SYS_NAME++: Incremento de la variable de temporización en cada ciclo de 1ms (tick).
 3. [DEL_SYS_NAME >= MAX_DEL_SYS]: Uso de la variable temporizadora como condición de guarda (guard) para autorizar una transición por timeout o cumplimiento de un intervalo de tiempo.
 
-4. 
+**System Statechart - State Transition Table**
+
+| Current State | Event | [Guard] | Next State | Actions |
+| :---: | :---: | :---: | :---: | :---: |
+| **ST_SYS_IDLE** | EV_SYS_BTN_DOWN | - | **ST_SYS_WAIT_RELEASE** | raise EV_ACT_LED_BLINK, DEL_SYS_NAME = 0 |
+| **ST_SYS_IDLE** | tick | - | **ST_SYS_IDLE** | - |
+| **ST_SYS_WAIT_RELEASE** | EV_SYS_BTN_UP | - | **ST_SYS_ACTIVE** | raise EV_ACT_LED_ON, DEL_SYS_NAME = 0 |
+| **ST_SYS_WAIT_RELEASE** | tick | - | **ST_SYS_WAIT_RELEASE** | DEL_SYS_NAME++ |
+| **ST_SYS_ACTIVE** | tick | [DEL_SYS_NAME < MAX_DEL_SYS] | **ST_SYS_ACTIVE** | DEL_SYS_NAME++ |
+| **ST_SYS_ACTIVE** | tick | [DEL_SYS_NAME >= MAX_DEL_SYS] | **ST_SYS_IDLE** | raise EV_ACT_LED_OFF |
