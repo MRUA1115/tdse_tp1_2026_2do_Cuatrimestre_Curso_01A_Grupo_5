@@ -20,4 +20,22 @@ Variables de control de tiempo (Convención DEL_ACT_NAME):
 2. DEL_ACT_NAME++: Incremento de la variable temporizadora en cada llamada de 1ms (tick).
 3. [DEL_ACT_NAME >= MAX_DEL_ACT]: Condición de guarda (guard) que verifica si transcurrió el semiciclo de parpadeo para realizar la alternancia del LED.
 
+**Actuator Statechart - State Transition Table**
+
+| Current State | Event | [Guard] | Next State | Actions |
+| :---: | :---: | :---: | :---: | :---: |
+| **ST_ACT_OFF** | EV_ACT_LED_ON | - | **ST_ACT_ON** | led_turn_on() |
+| **ST_ACT_OFF** | EV_ACT_LED_BLINK | - | **ST_ACT_BLINK_ON** | led_turn_on(), DEL_ACT_NAME = 0 |
+| **ST_ACT_OFF** | EV_ACT_LED_OFF / tick | - | **ST_ACT_OFF** | - |
+| **ST_ACT_ON** | EV_ACT_LED_OFF | - | **ST_ACT_OFF** | led_turn_off() |
+| **ST_ACT_ON** | EV_ACT_LED_BLINK | - | **ST_ACT_BLINK_ON** | led_turn_on(), DEL_ACT_NAME = 0 |
+| **ST_ACT_ON** | EV_ACT_LED_ON / tick | - | **ST_ACT_ON** | - |
+| **ST_ACT_BLINK_ON** | EV_ACT_LED_OFF | - | **ST_ACT_OFF** | led_turn_off() |
+| **ST_ACT_BLINK_ON** | EV_ACT_LED_ON | - | **ST_ACT_ON** | led_turn_on() |
+| **ST_ACT_BLINK_ON** | tick | [DEL_ACT_NAME < MAX_DEL_ACT] | **ST_ACT_BLINK_ON** | DEL_ACT_NAME++ |
+| **ST_ACT_BLINK_ON** | tick | [DEL_ACT_NAME >= MAX_DEL_ACT] | **ST_ACT_BLINK_OFF** | led_turn_off(), DEL_ACT_NAME = 0 |
+| **ST_ACT_BLINK_OFF** | EV_ACT_LED_OFF | - | **ST_ACT_OFF** | led_turn_off() |
+| **ST_ACT_BLINK_OFF** | EV_ACT_LED_ON | - | **ST_ACT_ON** | led_turn_on() |
+| **ST_ACT_BLINK_OFF** | tick | [DEL_ACT_NAME < MAX_DEL_ACT] | **ST_ACT_BLINK_OFF** | DEL_ACT_NAME++ |
+| **ST_ACT_BLINK_OFF** | tick | [DEL_ACT_NAME >= MAX_DEL_ACT] | **ST_ACT_BLINK_ON** | led_turn_on(), DEL_ACT_NAME = 0 |
 
