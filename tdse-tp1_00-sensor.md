@@ -15,3 +15,19 @@ El modelo cuenta con al menos 2 (dos) acciones que reflejan que hubo un cambio r
 2. EV_SYS_BTN_UP (Signal): Acción que notifica mediante una señal al modelo System que el botón ha sido soltado y su estado de liberación es estable.
 3. DEL_BTN_NAME = 0 (Modificación de variable): Acción de inicialización o reseteo de la variable de control de tiempo (timer) al detectar un flanco en la señal.
 4. DEL_BTN_NAME++: Acción de incremento del timer, utilizado como condición o guard (ej. [guard]) para autorizar una transición de estado recién cuando haya pasado el tiempo necesario para ignorar los rebotes.
+
+**Sensor Statechart - State Transition Table**
+
+| Current State | Event | [Guard] | Next State | Actions |
+| :---: | :---: | :---: | :---: | :---: |
+| **UP** | EV_BTN_PRESSED | - | **FALLING** | DEL_BTN_NAME = 0 |
+| **FALLING** | tick | [DEL_BTN_NAME < T_DEBOUNCE] | **FALLING** | DEL_BTN_NAME++ |
+| **FALLING** | tick | [DEL_BTN_NAME >= T_DEBOUNCE] | **DOWN** | EV_SYS_BTN_DOWN |
+| **FALLING** | EV_BTN_NOT_PRESSED | - | **UP** | - |
+| **DOWN** | EV_BTN_NOT_PRESSED | - | **RISING** | DEL_BTN_NAME = 0 |
+| **RISING** | tick | [DEL_BTN_NAME < T_DEBOUNCE] | **RISING** | DEL_BTN_NAME++ |
+| **RISING** | tick | [DEL_BTN_NAME >= T_DEBOUNCE] | **UP** | EV_SYS_BTN_UP |
+| **RISING** | EV_BTN_PRESSED | - | **DOWN** | - |
+
+
+
